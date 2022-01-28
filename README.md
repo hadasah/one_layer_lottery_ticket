@@ -7,35 +7,39 @@ To find subnetworks for one-layer randomly weighted Transformer, we apply differ
 
 ## Requirements and Installation
 
-* [PyTorch](http://pytorch.org/) version >= 1.5.0
-* Python version >= 3.6
-* For training new models, you'll also need an NVIDIA GPU and [NCCL](https://github.com/NVIDIA/nccl)
-* **To install fairseq** and develop locally:
-
 ``` bash
-git clone https://github.com/pytorch/fairseq
-cd fairseq
+conda create --name cse517_project
+conda activate cse517_project
+git clone https://github.com/hadasah/one_layer_lottery_ticket
+cd one_layer_lottery_ticket
 pip install --editable ./
+pip install gdown
+gdown https://docs.google.com/uc?id=1cqOP2FKn_z26lNu03Q6XZusYHDdNGLt4
+tar -xvf mt_data.tar.gz
+rm mt_data.tar.gz
 ```
+
+Don't run the commands below directly, instead follow the example set in project/1layer_iwslt/run.py
 
 ## Training 
 We have the pre-processed data for IWSLT/WMT and the pre-trained encoder/decoder embedding at [data](https://drive.google.com/file/d/1cqOP2FKn_z26lNu03Q6XZusYHDdNGLt4/view?usp=sharing). 
 
 To train a one-layer randomly weighted Transformer on IWSLT with one GPU, you can run the script below:
 ```
-OUTPUT_PATH=
-DATA_PATH=data-bin/iwslt14.tokenized.de-en/
+OUTPUT_PATH=experiments/1layer_iwslt
+DATA_PATH=data/data-bin/iwslt14.tokenized.de-en/
 prune_ratio=0.5
 share_mask=layer_weights
 init=kaiming_uniform
-_arch=masked_transformer_iwslt_de_en/masked_transformerbig_iwslt_de_en
+_arch=masked_transformerbig_iwslt_de_en
+max_tokens=4096
 
 python train.py ${DATA_PATH} --seed 1 --fp16 --no-progress-bar \
         --max-epoch 55 --save-interval 1 --keep-last-epochs 5 \
         --arch ${_arch} --optimizer adam --adam-betas '(0.9, 0.98)' --clip-norm 0.0 \
         --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
         --dropout 0.3 --weight-decay 0.0001 --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
-        --max-tokens 4096 --eval-bleu --eval-bleu-args '{{"beam": 5, "max_len_a": 1.2, "max_len_b": 10}}' \
+        --max-tokens ${max_tokens} --eval-bleu --eval-bleu-args '{{"beam": 5, "max_len_a": 1.2, "max_len_b": 10}}' \
         --eval-bleu-detok moses --eval-bleu-remove-bpe --best-checkpoint-metric bleu --maximize-best-checkpoint-metric \
         --share-mask ${share_mask} --clip-norm 0.5 --mask-layernorm-type masked_layernorm \
         --prune-ratio ${prune_ratio} --mask-init standard --prune-method super_mask --mask-constant 0. \
@@ -46,8 +50,8 @@ python train.py ${DATA_PATH} --seed 1 --fp16 --no-progress-bar \
 
 To train a one-layer randomly weighted Transformer on WMT with 8 GPUs, you can run the script below:
 ```
-OUTPUT_PATH=
-DATA_PATH=data-bin/wmt14_en_de_joined_dict/
+OUTPUT_PATH=experiments/1layer_wmt
+DATA_PATH=data/data-bin/wmt14_en_de_joined_dict/
 prune_ratio=0.5
 share_mask=layer_weights
 _arch=masked_transformer_wmt_en_de/masked_transformer_wmt_en_de_big
