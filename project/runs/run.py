@@ -53,5 +53,5 @@ for sweep_name, grid in grids.items():
         debug_mode=DEBUG_MODE,
         top_level_experiments_folder=TOP_LEVEL_EXPERIMENTS_FOLDER,
         output_dir_name='--save-dir',
-        conda_env_name='cse517',
+        conda_env_name='cse517_project',
     )

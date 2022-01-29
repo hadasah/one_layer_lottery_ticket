@@ -10,9 +10,16 @@ To find subnetworks for one-layer randomly weighted Transformer, we apply differ
 ``` bash
 conda create --name cse517_project
 conda activate cse517_project
+# to avoid python 3.9 bug
+conda install python=3.7
 git clone https://github.com/hadasah/one_layer_lottery_ticket
 cd one_layer_lottery_ticket
 pip install --editable ./
+# downgrade sacrebleu and hydra to version used back then
+pip install sacrebleu==1.5.1
+pip install hydra-core==1.0.7
+# needed for masked transformer
+pip install sacremoses
 pip install gdown
 gdown https://docs.google.com/uc?id=1cqOP2FKn_z26lNu03Q6XZusYHDdNGLt4
 tar -xvf mt_data.tar.gz
