@@ -35,6 +35,7 @@ def progress_bar(
     default_log_format: str = "tqdm",
     wandb_project: Optional[str] = None,
     wandb_run_name: Optional[str] = None,
+    wandb_entity: Optional[str] = None,
     azureml_logging: Optional[bool] = False,
 ):
     if log_format is None:
@@ -64,7 +65,7 @@ def progress_bar(
             bar = TensorboardProgressBarWrapper(bar, tensorboard_logdir)
 
     if wandb_project:
-        bar = WandBProgressBarWrapper(bar, wandb_project, run_name=wandb_run_name)
+        bar = WandBProgressBarWrapper(bar, wandb_project, run_name=wandb_run_name, entity=wandb_entity)
 
     if azureml_logging:
         bar = AzureMLProgressBarWrapper(bar)
@@ -375,7 +376,7 @@ except ImportError:
 class WandBProgressBarWrapper(BaseProgressBar):
     """Log to Weights & Biases."""
 
-    def __init__(self, wrapped_bar, wandb_project, run_name=None):
+    def __init__(self, wrapped_bar, wandb_project, run_name=None, entity=None):
         self.wrapped_bar = wrapped_bar
         if wandb is None:
             logger.warning("wandb not found, pip install wandb")
@@ -383,7 +384,7 @@ class WandBProgressBarWrapper(BaseProgressBar):
 
         # reinit=False to ensure if wandb.init() is called multiple times
         # within one process it still references the same run
-        wandb.init(project=wandb_project, reinit=False, name=run_name)
+        wandb.init(project=wandb_project, reinit=False, name=run_name, entity=entity)
 
     def __iter__(self):
         return iter(self.wrapped_bar)

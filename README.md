@@ -15,6 +15,8 @@ conda install python=3.7
 git clone https://github.com/hadasah/one_layer_lottery_ticket
 cd one_layer_lottery_ticket
 pip install --editable ./
+# needed for logging
+pip install wandb
 # downgrade sacrebleu and hydra to version used back then
 pip install sacrebleu==1.5.1
 pip install hydra-core==1.0.7

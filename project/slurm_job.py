@@ -148,6 +148,7 @@ def run_grid(
     debug_mode=False,
     dry_mode=False,
     add_name=None,
+    add_sweep_name=False,
     top_level_experiments_folder=None,
     output_dir_name=None,
     conda_env_name='latest',
@@ -259,6 +260,18 @@ def run_grid(
             new_name = job.name
             new_jobs.append(Job(cmd=new_cmd, name=new_name))
         all_jobs = new_jobs
+
+    if add_sweep_name:
+        new_jobs = []
+        for job in all_jobs:
+            new_cmd = ' '.join((job.cmd, job.name))
+            if job.name == '':
+                new_name = sweep_name
+            else:
+                new_name = '{}_{}'.format(sweep_name, job.name)
+            new_jobs.append(Job(cmd=new_cmd, name=new_name))
+        all_jobs = new_jobs
+
     if output_dir_name:
         new_jobs = []
         for job in all_jobs:

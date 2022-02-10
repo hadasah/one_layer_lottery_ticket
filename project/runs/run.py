@@ -31,6 +31,8 @@ grids = {
             '--share-mask': ['layer_weights'],
             '--prune-ratio': [0.5],
             '--init': ['kaiming_uniform'],
+            '--wandb-project': ['cse517-project'],
+            '--wandb-entity': ['cse517-project-wi22'],
         },
     },
 }
@@ -51,6 +53,7 @@ for sweep_name, grid in grids.items():
         mem_gb=40,
         job_id_start=1,
         debug_mode=DEBUG_MODE,
+        add_sweep_name=True,
         top_level_experiments_folder=TOP_LEVEL_EXPERIMENTS_FOLDER,
         output_dir_name='--save-dir',
         conda_env_name='cse517_project',

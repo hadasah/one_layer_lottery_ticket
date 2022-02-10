@@ -248,6 +248,11 @@ def train(
         wandb_run_name=os.environ.get(
             "WANDB_NAME", os.path.basename(cfg.checkpoint.save_dir)
         ),
+        wandb_entity=(
+            cfg.common.wandb_entity
+            if distributed_utils.is_master(cfg.distributed_training)
+            else None
+        ),
         azureml_logging=(
             cfg.common.azureml_logging if distributed_utils.is_master(cfg.distributed_training) else False
         ),
@@ -402,6 +407,11 @@ def validate(
             ),
             wandb_run_name=os.environ.get(
                 "WANDB_NAME", os.path.basename(cfg.checkpoint.save_dir)
+            ),
+            wandb_entity=(
+                cfg.common.wandb_entity
+                if distributed_utils.is_master(cfg.distributed_training)
+                else None
             ),
         )
 

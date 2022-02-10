@@ -109,6 +109,12 @@ class CommonConfig(FairseqDataclass):
             "help": "Weights and Biases project name to use for logging"
         },
     )
+    wandb_entity: Optional[str] = field(
+        default=None,
+        metadata={
+            "help": "Weights and Biases entity name to use for logging"
+        },
+    )
     azureml_logging: Optional[bool] = field(
         default=False,
         metadata={
