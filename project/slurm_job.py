@@ -189,7 +189,8 @@ def run_grid(
     SAVE_ROOT = save_root(sweep_name, user, top_level_experiments_folder)
     LOG_ROOT = log_root(sweep_name, user, top_level_experiments_folder)
     Job = namedtuple('Job', ['cmd', 'name'])
-    all_jobs = [Job(cmd=prefix, name='')]
+    job_name = sweep_name if add_sweep_name else ''
+    all_jobs = [Job(cmd=prefix, name=job_name)]
 
     for key, args in grid.get('positional_args', {}).items():
         new_jobs = []
@@ -238,10 +239,11 @@ def run_grid(
             for a in args:
                 new_cmd = ' '.join((job.cmd, str(key), str(a)))
                 new_name = job.name
+                print(job.name)
                 if (len(args) > 1 or key in name_keys) and key not in hide_keys:
-                    if len(a) == 0:
-                        new_jobs.append(Job(cmd=new_cmd, name=new_name))
-                        continue
+                    # if len(a) == 0:
+                    #     new_jobs.append(Job(cmd=new_cmd, name=new_name))
+                    #     continue
                     if type(a) == str:
                         a = a.replace('_', '')
                         if ' ' in a:
@@ -256,19 +258,9 @@ def run_grid(
     if add_name:
         new_jobs = []
         for job in all_jobs:
+            print("ADDING NAME")
             new_cmd = ' '.join((job.cmd, job.name))
             new_name = job.name
-            new_jobs.append(Job(cmd=new_cmd, name=new_name))
-        all_jobs = new_jobs
-
-    if add_sweep_name:
-        new_jobs = []
-        for job in all_jobs:
-            new_cmd = ' '.join((job.cmd, job.name))
-            if job.name == '':
-                new_name = sweep_name
-            else:
-                new_name = '{}_{}'.format(sweep_name, job.name)
             new_jobs.append(Job(cmd=new_cmd, name=new_name))
         all_jobs = new_jobs
 

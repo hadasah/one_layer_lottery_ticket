@@ -1,9 +1,10 @@
 from project.slurm_job import run_grid
 import os
 
-SWEEP_NAME = "1layer_iwslt"
+SWEEP_NAME = "1layer_iwslt_sweep"
 NUM_GPUS = 1
 DEBUG_MODE = False
+DRY_MODE = False
 name_keys = []
 GIT_REPO_FOLDER = '/gscratch/zlab/margsli/gitfiles/one_layer_lottery_ticket'
 TOP_LEVEL_EXPERIMENTS_FOLDER = f'{GIT_REPO_FOLDER}/experiments'
@@ -27,7 +28,7 @@ grids = {
         'positional_args': {},
         'named_args': {
             '--arch': ['masked_transformerbig_iwslt_de_en'],
-            '--max-tokens': [4096],
+            '--max-tokens': [4096, 8192],
             '--share-mask': ['layer_weights'],
             '--prune-ratio': [0.5],
             '--init': ['kaiming_uniform'],
@@ -57,4 +58,5 @@ for sweep_name, grid in grids.items():
         top_level_experiments_folder=TOP_LEVEL_EXPERIMENTS_FOLDER,
         output_dir_name='--save-dir',
         conda_env_name='cse517_project',
+        dry_mode=DRY_MODE,
     )
