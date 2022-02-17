@@ -13,6 +13,8 @@ DRY_MODE = False
 
 cmd = f'fairseq-train {DATA_FOLDER}'
 
+# added bleu args to WMT and also removed the distributed training args
+
 grids = {
     SWEEP_NAME: {
         'fixed_args': '--seed 1 --dropout 0.2 --no-progress-bar --fp16 \
