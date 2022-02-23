@@ -52,6 +52,8 @@ def init_weight(weight, init="standard", scale_fan=False, prune_rate=0.5, nonlin
         )
     elif init == "xavier_normal":
         nn.init.xavier_normal_(weight)
+    elif init == "xavier_uniform":
+        nn.init.xavier_uniform_(weight)
     elif init == "xavier_constant":
 
         fan_in, fan_out = nn.init._calculate_fan_in_and_fan_out(weight)

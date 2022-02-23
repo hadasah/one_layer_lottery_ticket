@@ -239,7 +239,6 @@ def run_grid(
             for a in args:
                 new_cmd = ' '.join((job.cmd, str(key), str(a)))
                 new_name = job.name
-                print(job.name)
                 if (len(args) > 1 or key in name_keys) and key not in hide_keys:
                     # if len(a) == 0:
                     #     new_jobs.append(Job(cmd=new_cmd, name=new_name))
@@ -293,7 +292,7 @@ def run_grid(
     job_id = job_id_start
     for job in all_jobs:
         for _ in range(num_copies):
-            new_name = job.name[1:cutoff] if cutoff else job.name[1:]
+            new_name = job.name[:cutoff] if cutoff else job.name
             if include_job_id:
                 if fixedname:
                     new_name = fixedname
@@ -303,6 +302,7 @@ def run_grid(
             final_jobs.append(Job(cmd=new_cmd, name=new_name))
             job_id += 1
     print('Example of first job:\n{}\n'.format(final_jobs[0].cmd))
+
     if dry_mode:
         return
 
@@ -417,6 +417,7 @@ def create_job_files(
     """Creates job folders and scripts"""
     SHOULD_REQUEUE = str(requeue).lower()
     SAVE = os.path.join(SAVE_ROOT, param_name)
+    print(SAVE)
     bash('mkdir -p ' + SAVE)
     LOG = os.path.join(LOG_ROOT, param_name)
     bash('mkdir -p ' + LOG)
