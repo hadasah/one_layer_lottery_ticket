@@ -1,36 +1,39 @@
 from project.slurm_job import run_grid
 import os
 
-SWEEP_NAME = "1layer_iwslt_sweep"
+SWEEP_NAME = "1layer_wmt_base_prune_ratio=0.1_w_bleu"
 NUM_GPUS = 1
 DEBUG_MODE = False
-DRY_MODE = False
 name_keys = []
-GIT_REPO_FOLDER = '/gscratch/zlab/margsli/gitfiles/one_layer_lottery_ticket'
+GIT_REPO_FOLDER = '/gscratch/bdata/kenqgu/Courses/CSE517/one_layer_lottery_ticket'
 TOP_LEVEL_EXPERIMENTS_FOLDER = f'{GIT_REPO_FOLDER}/experiments'
 TOP_LEVEL_DATA_FOLDER = f'{GIT_REPO_FOLDER}/data/data-bin'
-DATA_FOLDER = f'{TOP_LEVEL_DATA_FOLDER}/iwslt14.tokenized.de-en'
+DATA_FOLDER = f'{TOP_LEVEL_DATA_FOLDER}/wmt14_en_de_joined_dict'
+DRY_MODE = False
 
 cmd = f'fairseq-train {DATA_FOLDER}'
 
+# added bleu args to WMT and also removed the distributed training args
+
 grids = {
     SWEEP_NAME: {
-        'fixed_args': '--seed 1 --fp16 --no-progress-bar \
-            --max-epoch 55 --save-interval 1 --keep-last-epochs 5 \
-            --optimizer adam --adam-betas \'(0.9, 0.98)\' --clip-norm 0.0 \
-            --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
-            --dropout 0.3 --weight-decay 0.0001 --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
-            --eval-bleu --eval-bleu-args \'{"beam": 5, "max_len_a": 1.2, "max_len_b": 10}\' \
+        'fixed_args': '--seed 1 --dropout 0.2 --no-progress-bar --fp16 \
+            --share-decoder-input-output-embed --optimizer adam --adam-betas \'(0.9, 0.98)\' --clip-norm 0.0 \
+            --lr-scheduler inverse_sqrt --warmup-init-lr 1e-7 --warmup-updates 4000 \
+            --lr 1e-3 --update-freq 1 --log-interval 50 \
+            --criterion label_smoothed_cross_entropy --label-smoothing 0.1 --weight-decay 0.0 \
+            --max-tokens 4096 \
             --eval-bleu-detok moses --eval-bleu-remove-bpe --best-checkpoint-metric bleu --maximize-best-checkpoint-metric \
-            --clip-norm 0.5 --mask-layernorm-type masked_layernorm \
+            --ddp-backend no_c10d --keep-interval-updates 20 --keep-last-epochs 10 --max-epoch 100 \
+            --mask-layernorm-type masked_layernorm \
             --mask-init standard --prune-method super_mask --mask-constant 0. \
             --scale-fan --share-decoder-input-output-embed',
         'positional_args': {},
         'named_args': {
-            '--arch': ['masked_transformerbig_iwslt_de_en'],
-            '--max-tokens': [4096, 8192],
+            '--arch': ['masked_transformer_wmt_en_de'],
+            '--max-tokens': [4096],
             '--share-mask': ['layer_weights'],
-            '--prune-ratio': [0.5],
+            '--prune-ratio': [0.1],
             '--init': ['kaiming_uniform'],
             '--wandb-project': ['cse517-project'],
             '--wandb-entity': ['cse517-project-wi22'],
@@ -58,5 +61,5 @@ for sweep_name, grid in grids.items():
         top_level_experiments_folder=TOP_LEVEL_EXPERIMENTS_FOLDER,
         output_dir_name='--save-dir',
         conda_env_name='cse517_project',
-        dry_mode=DRY_MODE,
+        dry_mode=DRY_MODE
     )
