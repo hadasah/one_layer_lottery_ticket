@@ -2,7 +2,7 @@ from project.slurm_job import run_grid
 import numpy as np
 import os
 
-SWEEP_NAME = "1layer_iwslt_deep_sweep"
+SWEEP_NAME = "1layer_iwslt_base_sweep"
 NUM_GPUS = 1
 DEBUG_MODE = False
 DRY_MODE = False
@@ -28,10 +28,11 @@ grids = {
             --scale-fan --share-decoder-input-output-embed',
         'positional_args': {},
         'named_args': {
-            '--arch': ['masked_transformerdeep_iwslt_de_en'],
+            '--arch': ['masked_transformer_iwslt_de_en'],
             '--max-tokens': [4096],
             '--share-mask': ['layer_weights'],
-            '--prune-ratio': [i for i in np.arange(0.1, 1.0, 0.1)],
+            '--prune-ratio': [i for i in [0.1, 0.2]],
+            # '--prune-ratio': [i for i in np.arange(0.1, 1.0, 0.1)],
             '--init': ['kaiming_uniform'],
             '--wandb-project': ['cse517-project'],
             '--wandb-entity': ['cse517-project-wi22'],
@@ -50,7 +51,7 @@ for sweep_name, grid in grids.items():
         cpus=5,
         nodes=1,
         account='bdata',
-        partition='gpu-2080ti',
+        partition='gpu-rtx6k',
         jobtime='6:00:00',
         mem_gb=40,
         job_id_start=1,

@@ -2,15 +2,15 @@ from project.slurm_job import run_grid
 import numpy as np
 import os
 
-SWEEP_NAME = "6layer_iwslt_fully_weighted"
+SWEEP_NAME = "1layer_iwslt_base_sweep_embed"
 NUM_GPUS = 1
 DEBUG_MODE = False
 DRY_MODE = False
 name_keys = []
 GIT_REPO_FOLDER = '/gscratch/zlab/margsli/gitfiles/one_layer_lottery_ticket'
 TOP_LEVEL_EXPERIMENTS_FOLDER = f'{GIT_REPO_FOLDER}/experiments/'
-TOP_LEVEL_DATA_FOLDER = f'{GIT_REPO_FOLDER}/data/data-bin'
-DATA_FOLDER = f'{TOP_LEVEL_DATA_FOLDER}/iwslt14.tokenized.de-en'
+TOP_LEVEL_DATA_FOLDER = f'{GIT_REPO_FOLDER}/data'
+DATA_FOLDER = f'{TOP_LEVEL_DATA_FOLDER}/data-bin/iwslt14.tokenized.de-en'
 
 cmd = f'fairseq-train {DATA_FOLDER}'
 
@@ -30,10 +30,14 @@ grids = {
         'named_args': {
             '--arch': ['masked_transformer_iwslt_de_en'],
             '--max-tokens': [4096],
-            '--prune-ratio': [0],
+            '--share-mask': ['layer_weights'],
+            # '--prune-ratio': [i for i in np.arange(0.1, 1.0, 0.1)],
+            '--prune-ratio': [i for i in [0.6, 0.7, 0.8]],
             '--init': ['kaiming_uniform'],
             '--wandb-project': ['cse517-project'],
             '--wandb-entity': ['cse517-project-wi22'],
+            '--encoder-embed-path': [f'{TOP_LEVEL_DATA_FOLDER}/iwslt_embed/encoder_embed.txt'],
+            '--decoder-embed-path': [f'{TOP_LEVEL_DATA_FOLDER}/iwslt_embed/decoder_embed.txt'],
         },
     },
 }
@@ -49,8 +53,8 @@ for sweep_name, grid in grids.items():
         cpus=5,
         nodes=1,
         account='bdata',
-        partition='gpu-2080ti',
-        jobtime='8:00:00',
+        partition='gpu-rtx6k',
+        jobtime='6:00:00',
         mem_gb=40,
         job_id_start=1,
         debug_mode=DEBUG_MODE,

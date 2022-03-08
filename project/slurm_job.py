@@ -257,7 +257,6 @@ def run_grid(
     if add_name:
         new_jobs = []
         for job in all_jobs:
-            print("ADDING NAME")
             new_cmd = ' '.join((job.cmd, job.name))
             new_name = job.name
             new_jobs.append(Job(cmd=new_cmd, name=new_name))
@@ -417,7 +416,6 @@ def create_job_files(
     """Creates job folders and scripts"""
     SHOULD_REQUEUE = str(requeue).lower()
     SAVE = os.path.join(SAVE_ROOT, param_name)
-    print(SAVE)
     bash('mkdir -p ' + SAVE)
     LOG = os.path.join(LOG_ROOT, param_name)
     bash('mkdir -p ' + LOG)

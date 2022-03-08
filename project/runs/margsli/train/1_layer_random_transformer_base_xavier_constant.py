@@ -2,7 +2,7 @@ from project.slurm_job import run_grid
 import numpy as np
 import os
 
-SWEEP_NAME = "1layer_iwslt_base_sweep"
+SWEEP_NAME = "1layer_iwslt_base_sweep_xavier_constant"
 NUM_GPUS = 1
 DEBUG_MODE = False
 DRY_MODE = False
@@ -32,7 +32,7 @@ grids = {
             '--max-tokens': [4096],
             '--share-mask': ['layer_weights'],
             '--prune-ratio': [i for i in np.arange(0.1, 1.0, 0.1)],
-            '--init': ['kaiming_uniform'],
+            '--init': ['xavier_constant'],
             '--wandb-project': ['cse517-project'],
             '--wandb-entity': ['cse517-project-wi22'],
         },
